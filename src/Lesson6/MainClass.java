@@ -3,6 +3,7 @@ package Lesson6;
 /**
  * Created by Евгений Чашурин on 11.02.2017.
  * echashurin@gmail.com
+ * Check
  */
 public class MainClass {
     public static void main(String[] args) {
