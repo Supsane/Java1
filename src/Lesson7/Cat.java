@@ -8,14 +8,10 @@ public class Cat {
     private int appetite;
     private boolean hungry;
 
-    public void setHungry(boolean hungry) {
-        this.hungry = hungry;
-    }
-
     public Cat(String name, int appetite) {
         this.name = name;
         this.appetite = appetite;
-        this.hungry = true;
+        this.hungry = false;
     }
 
     public void info() {
@@ -23,7 +19,10 @@ public class Cat {
     }
 
     public void eat(Plate plate) {
-        plate.decreaseFood(appetite);
-        hungry = false;
+        if (!hungry) {
+            boolean eatOrNot = plate.decreaseFood(appetite);
+            if (eatOrNot) hungry = true;
+            else hungry = false;
+        } else System.out.println(name + " не хочет есть");
     }
 }
