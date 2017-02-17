@@ -5,17 +5,25 @@ package Lesson7;
  */
 public class MainClass {
     public static void main(String[] args) {
-        Dog dog1 = new Dog("Bobik 1");
-        Dog dog2 = new Dog("Bobik 2");
-        Dog dog3 = new Dog("Bobik 3");
-        Ball ball = new Ball("Red");
-        Cube cube = new Cube("Green");
+        Cat cat[] = {new Cat("Barsik1", 10), new Cat("Barsik2", 15), new Cat("Barsik3", 20)};
+        Plate plate = new Plate(41);
+        cat[0].info();
+        plate.info();
+        cat[0].eat(plate);
+        cat[0].info();
+        plate.info();
+        cat[0].eat(plate);
+        cat[0].info();
+        plate.info();
+        cat[1].info();
+        cat[1].eat(plate);
+        cat[1].info();
+        plate.info();
+        cat[2].info();
+        cat[2].eat(plate);
+        cat[2].eat(plate);
+        cat[2].info();
+        plate.info();
 
-        dog1.play(ball);
-        dog1.play(ball);
-        dog2.play(cube);
-        dog2.stopPlaying();
-        dog1.stopPlaying();
-        dog1.stopPlaying();
     }
 }
