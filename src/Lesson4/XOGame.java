@@ -12,7 +12,7 @@ public class XOGame {
     public static Random rnd = new Random();
 
     public static char fieldArray[][];
-    public static final int SIZE_FIELD = 4;
+    public static final int SIZE_FIELD = 3;
     public static final int DOT_WIN = 4;
     public static final char EMPTY_CELL = '*';
     public static final char X_DOT = 'X';
@@ -131,11 +131,15 @@ public class XOGame {
         return false;
     }
 
-    public static boolean checkWin(char xy) {
-        for (int i = 0; i < SIZE_FIELD; i++) {
-            for (int j = 0; j < SIZE_FIELD; j++) {
-            }
-        }
+    public static boolean checkWin(char symb) {
+        if(fieldArray[0][0] == symb && fieldArray[0][1] == symb && fieldArray[0][2] == symb) return true;
+        if(fieldArray[1][0] == symb && fieldArray[1][1] == symb && fieldArray[1][2] == symb) return true;
+        if(fieldArray[2][0] == symb && fieldArray[2][1] == symb && fieldArray[2][2] == symb) return true;
+        if(fieldArray[0][0] == symb && fieldArray[1][0] == symb && fieldArray[2][0] == symb) return true;
+        if(fieldArray[0][1] == symb && fieldArray[1][1] == symb && fieldArray[2][1] == symb) return true;
+        if(fieldArray[0][2] == symb && fieldArray[1][2] == symb && fieldArray[2][2] == symb) return true;
+        if(fieldArray[0][0] == symb && fieldArray[1][1] == symb && fieldArray[2][2] == symb) return true;
+        if(fieldArray[2][0] == symb && fieldArray[1][1] == symb && fieldArray[0][2] == symb) return true;
         return false;
     }
 
