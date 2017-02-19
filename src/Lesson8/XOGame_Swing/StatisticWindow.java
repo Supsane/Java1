@@ -1,14 +1,13 @@
-package Lesson8;
+package Lesson8.XOGame_Swing;
 
 import javax.swing.*;
 
 /**
  * Created by Евгений on 18.02.2017.
  */
-public class ParametresWindow extends JFrame {
-
-    public ParametresWindow() {
-        setTitle("Параметры");
+public class StatisticWindow extends JFrame {
+    public StatisticWindow() {
+        setTitle("Статистика");
         setBounds(0, 0, 300, 500);
         setLocationRelativeTo(null);
         setResizable(false);

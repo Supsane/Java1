@@ -1,4 +1,4 @@
-package Lesson8;
+package Lesson8.XOGame_Swing;
 
 import javax.swing.*;
 
