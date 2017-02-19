@@ -1,156 +1,174 @@
-package Lesson8;
-
 import java.util.Random;
 import java.util.Scanner;
 
-/**
- * Created by Евгений Чашурин on 03.02.2017.
- * echashurin@gmail.com
- */
 public class XOGame {
     public static Scanner sc = new Scanner(System.in);
-    public static Random rnd = new Random();
+    public static Random rand = new Random();
 
-    public static char fieldArray[][];
-    public static final int SIZE_FIELD = 3;
-    public static final int DOT_WIN = 3;
-    public static final char EMPTY_CELL = '*';
+    public static char[][] map;
+
+    public static final int SIZE = 3;
+    public static final int DOTS_TO_WIN = 3;
+    // public static final char EMPTY_DOT = '\u2022';
+    public static final char EMPTY_DOT = '_';
     public static final char X_DOT = 'X';
     public static final char O_DOT = 'O';
 
     public static void main(String[] args) {
-        initField();
-        printField();
+        initMap();
+        printMap();
         while (true) {
-            stepUser();
-            printField();
-            if (checkWin(X_DOT)) {
-                System.out.println("Поздравляем, Вы победили!!!");
+            humanTurn();
+            printMap();
+            if (checkWinNew(X_DOT)) {
+                System.out.println("Победил человек");
                 break;
             }
-            if (checkFieldFull()) {
+            if (isMapFull()) {
                 System.out.println("Ничья");
                 break;
             }
-            stepAI();
-            printField();
-            if (checkWin(O_DOT)) {
-                System.out.println("Победил компьютер");
+            aiTurn();
+            printMap();
+            if (checkWinNew(O_DOT)) {
+                System.out.println("Победил AI");
                 break;
             }
-            if (checkFieldFull()) {
+            if (isMapFull()) {
                 System.out.println("Ничья");
                 break;
             }
         }
-        System.out.println("Игра окончена.");
+        System.out.println("Игра окончена");
     }
 
-    public static void initField() {
-        fieldArray = new char[SIZE_FIELD][SIZE_FIELD];
-        for (int i = 0; i < SIZE_FIELD; i++) {
-            for (int j = 0; j < SIZE_FIELD; j++) {
-                fieldArray[i][j] = EMPTY_CELL;
+
+    public static boolean isMapFull() {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (map[i][j] == EMPTY_DOT) return false;
+            }
+        }
+        return true;
+    }
+
+    public static void aiTurn() {
+        int x = -1, y = -1;
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (isCellEmpty(i, j)) {
+                    map[j][i] = O_DOT;
+                    if (checkWinNew(O_DOT)) {
+                        x = i;
+                        y = j;
+                    }
+                    map[j][i] = EMPTY_DOT;
+                }
+
+            }
+        }
+        if (x == -1 && y == -1) {
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    if (isCellEmpty(i, j)) {
+                        map[j][i] = X_DOT;
+                        if (checkWinNew(X_DOT)) {
+                            x = i;
+                            y = j;
+                        }
+                        map[j][i] = EMPTY_DOT;
+                    }
+
+                }
+            }
+        }
+        if (x == -1 && y == -1) {
+            do {
+                x = rand.nextInt(SIZE);
+                y = rand.nextInt(SIZE);
+            } while (!isCellEmpty(x, y));
+        }
+        System.out.printf("AI сделал ход %d; %d\n", x + 1, y + 1);
+        map[y][x] = O_DOT;
+    }
+
+    public static boolean checkWin(char dot) {
+        if (map[0][0] == dot && map[0][1] == dot && map[0][2] == dot) return true;
+        if (map[1][0] == dot && map[1][1] == dot && map[1][2] == dot) return true;
+        if (map[2][0] == dot && map[2][1] == dot && map[2][2] == dot) return true;
+
+        if (map[0][0] == dot && map[1][0] == dot && map[2][0] == dot) return true;
+        if (map[0][1] == dot && map[1][1] == dot && map[2][1] == dot) return true;
+        if (map[0][2] == dot && map[1][2] == dot && map[2][2] == dot) return true;
+
+        if (map[0][0] == dot && map[1][1] == dot && map[2][2] == dot) return true;
+        if (map[2][0] == dot && map[1][1] == dot && map[0][2] == dot) return true;
+        return false;
+    }
+
+    public static boolean checkWinNew(char dot) {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (map[j][i] != dot) continue;
+                if (checkLine(i, j, 1, 0, dot)) return true; // пытаемся построить горизонтальные линии
+                if (checkLine(i, j, 0, 1, dot)) return true; // пытаемся построить веритикальные линии
+                if (checkLine(i, j, 1, 1, dot))
+                    return true; // пытаемся построить диагональные линии направленные вправо-вниз
+                if (checkLine(i, j, 1, -1, dot))
+                    return true; // пытаемся построить диагональные линии направленные вправо-вверх
+            }
+        }
+        return false;
+    }
+
+    public static boolean checkLine(int cx, int cy, int vx, int vy, char dot) {
+        // отсеиваем заранее невозможные проверки
+        if (cx + DOTS_TO_WIN * vx > SIZE || cy + DOTS_TO_WIN * vy > SIZE || cy + DOTS_TO_WIN * vy < -1) return false;
+        for (int i = 0; i < DOTS_TO_WIN; i++) {
+            if (map[cy + i * vy][cx + i * vx] != dot) return false;
+        }
+        return true;
+    }
+
+    public static void humanTurn() {
+        int x, y;
+        do {
+            System.out.println("Введите координаты (столбец)X (строка)Y");
+            x = sc.nextInt() - 1;
+            y = sc.nextInt() - 1;
+            sc.nextLine();
+        } while (!isCellEmpty(x, y));
+        map[y][x] = X_DOT;
+    }
+
+    public static boolean isCellEmpty(int x, int y) {
+        if (x < 0 || y < 0 || x >= SIZE || y >= SIZE) return false;
+        if (map[y][x] == EMPTY_DOT) return true;
+        return false;
+    }
+
+    public static void initMap() {
+        map = new char[SIZE][SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                map[i][j] = EMPTY_DOT;
             }
         }
     }
 
-    public static void printField() {
-        System.out.print("    ");
-        for (int i = 0; i < SIZE_FIELD; i++) {
-            System.out.printf(" %2d ", i + 1);
+    public static void printMap() {
+        System.out.print("   ");
+        for (int i = 1; i <= SIZE; i++) {
+            System.out.printf("%2d ", i);
         }
         System.out.println();
-        for (int i = 0; i < SIZE_FIELD; i++) {
-            System.out.printf(" %2d ", i + 1);
-            for (int j = 0; j < SIZE_FIELD; j++) {
-                System.out.printf(" %2c ", fieldArray[i][j]);
+        for (int i = 0; i < SIZE; i++) {
+            System.out.printf("%2d ", i + 1);
+            for (int j = 0; j < SIZE; j++) {
+                System.out.printf("%2c ", map[i][j]);
             }
             System.out.println();
         }
         System.out.println();
-    }
-
-    public static void stepUser() {
-        System.out.println("Ваш ход. Введите координаты X, Y.");
-        int x, y;
-        do {
-            x = checkX() - 1;
-            y = checkY() - 1;
-        }
-        while (!chekXY_SizeField(x, y));
-        fieldArray[y][x] = X_DOT;
-    }
-
-    public static int checkX() {
-        int x;
-        while (true) {
-            if (sc.hasNextInt()) {
-                x = sc.nextInt();
-                break;
-            } else {
-                System.out.println("Вы ввели не число, введите координату X");
-                sc.nextLine();
-            }
-        }
-        return x;
-    }
-
-    public static int checkY() {
-        int y;
-        while (true) {
-            if (sc.hasNextInt()) {
-                y = sc.nextInt();
-                break;
-            } else {
-                System.out.println("Вы ввели не число, введите координату Y");
-                sc.nextLine();
-            }
-        }
-        return y;
-    }
-
-    public static void stepAI() {
-        int x, y;
-        do {
-            x = rnd.nextInt(SIZE_FIELD);
-            y = rnd.nextInt(SIZE_FIELD);
-        }
-        while (!chekXY_SizeField(x, y));
-        fieldArray[y][x] = O_DOT;
-        System.out.println("Компьютер сходил в точку " + (x + 1) + ", " + (y + 1));
-    }
-
-    public static boolean chekXY_SizeField(int x, int y) {
-        if (x < 0 || y < 0 || x >= SIZE_FIELD || y >= SIZE_FIELD) {
-            System.out.println("Введенные координаты не попадают в поле, введите корректные координаты");
-            sc.nextLine();
-            return false;
-        }
-        if (fieldArray[y][x] == EMPTY_CELL) return true;
-        return false;
-    }
-
-    public static boolean checkWin(char symb) {
-        if (fieldArray[0][0] == symb && fieldArray[0][1] == symb && fieldArray[0][2] == symb) return true;
-        if (fieldArray[1][0] == symb && fieldArray[1][1] == symb && fieldArray[1][2] == symb) return true;
-        if (fieldArray[2][0] == symb && fieldArray[2][1] == symb && fieldArray[2][2] == symb) return true;
-
-        if (fieldArray[0][0] == symb && fieldArray[1][0] == symb && fieldArray[2][0] == symb) return true;
-        if (fieldArray[0][1] == symb && fieldArray[1][1] == symb && fieldArray[2][1] == symb) return true;
-        if (fieldArray[0][2] == symb && fieldArray[1][2] == symb && fieldArray[2][2] == symb) return true;
-
-        if (fieldArray[0][0] == symb && fieldArray[1][1] == symb && fieldArray[2][2] == symb) return true;
-        if (fieldArray[2][0] == symb && fieldArray[1][1] == symb && fieldArray[0][2] == symb) return true;
-        return false;
-    }
-
-    public static boolean checkFieldFull() {
-        for (int i = 0; i < SIZE_FIELD; i++) {
-            for (int j = 0; j < SIZE_FIELD; j++) {
-                if (fieldArray[i][j] == EMPTY_CELL) return false;
-            }
-        }
-        return true;
     }
 }
